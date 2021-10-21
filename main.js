@@ -1,4 +1,7 @@
-
+rightWristX = 0;
+rightWristY = 0;
+score_rightWrist = 0;
+game_status = "";
 /*created by prashant shukla */
 
 var paddle2 =10,paddle1=10;
@@ -21,6 +24,11 @@ var ball = {
     dy:3
 }
 
+function preload(){
+  ball_touch_paddle = loadSound("ball_touch_paddel.wav");
+  missed = loadSound("missed.wav");
+}
+
 function setup(){
   var canvas =  createCanvas(700,600);
   canvas.parent('canvas');
@@ -29,36 +37,51 @@ function setup(){
   video.hide();
 
   poseNet = ml5.poseNet(video,modelLoaded);
+  poseNet.on('pose',gotPoses);
 }
 
 function modelLoaded(){
   console.log('poseNet is initialized');
 }
 
+function gotPoses(results){
+  if(results.length > 0){
+    rightWristX = results[0].pose.rightWrist.x;
+    rightWristY = results[0].pose.rightWrist.y;
+    score_rightWrist = results[0].pose.keypoints[10].score;
+    console.log(score_rightWrist);
+    console.log(results);
+  }
+}
+
 function draw(){
+background(0);
+image(video,0,0,700,600);
+fill("black");
+stroke("black");
+rect(680,0,20,700);
+fill("black");
+stroke("black");
+rect(0,0,20,700);
 
-  image(video,0,0,700,600);
- background(0); 
 
- fill("black");
- stroke("black");
- rect(680,0,20,700);
+ if(score_rightWrist > 0.2){
+   r = 255;
+   g = 255;
+   b = 255;
+   fill(r,g,b);
+   stroke(r,g,b);
+   circle(rightWristX,rightWristY,30);
+ }
 
- fill("black");
- stroke("black");
- rect(0,0,20,700);
- 
-   //funtion paddleInCanvas call 
-   paddleInCanvas();
- 
-   //left paddle
-   fill(250,0,0);
+if(game_status == "start"){
+  document.getElementById("status").innerHTML = "Game is Loaded";
+  paddleInCanvas();
+  fill(250,0,0);
     stroke(0,0,250);
     strokeWeight(0.5);
    paddle1Y = mouseY; 
-   rect(paddle1X,paddle1Y,paddle1,paddle1Height,100);
-   
-   
+   rect(paddle1X,paddle1Y,paddle1,paddle1Height,100);   
     //pc computer paddle
     fill("#FFA500");
     stroke("#FFA500");
@@ -76,7 +99,12 @@ function draw(){
    //function move call which in very important
     move();
 }
+}
 
+function StartGame(){
+  game_status = "start";
+  document.getElementById("status").innerHTML = "Game is Loaded";
+}
 
 
 //function reset when ball does notcame in the contact of padde
