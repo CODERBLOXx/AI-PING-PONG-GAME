@@ -64,7 +64,6 @@ fill("black");
 stroke("black");
 rect(0,0,20,700);
 
-
  if(score_rightWrist > 0.2){
    r = 255;
    g = 255;
@@ -106,6 +105,10 @@ function StartGame(){
   document.getElementById("status").innerHTML = "Game is Loaded";
 }
 
+function restart(){
+  pcscore = 0;
+  loop();
+}
 
 //function reset when ball does notcame in the contact of padde
 function reset(){
@@ -113,9 +116,7 @@ function reset(){
    ball.y = height/2+100;
    ball.dx=3;
    ball.dy =3;
-   
 }
-
 
 //function midline draw a line in center
 function midline(){
@@ -155,11 +156,13 @@ function move(){
   if (ball.x-2.5*ball.r/2< 0){
   if (ball.y >= paddle1Y&& ball.y <= paddle1Y + paddle1Height) {
     ball.dx = -ball.dx+0.5; 
+    ball_touch_paddle.play();
   }
   else{
     pcscore++;
     reset();
     navigator.vibrate(100);
+    missed.play();
   }
 }
 if(pcscore ==4){
@@ -170,7 +173,7 @@ if(pcscore ==4){
     stroke("white");
     textSize(25)
     text("Game Over!☹☹",width/2,height/2);
-    text("Reload The Page!",width/2,height/2+30)
+    text("Press restart button to play again!",width/2,height/2+30)
     noLoop();
     pcscore = 0;
 }
